@@ -147,6 +147,7 @@ libdir = @libdir@
 localedir = @localedir@
 pkgdatadir = @pkgdatadir@
 pkgconfigdir = @pkgconfigdir@
+aclocaldir = @aclocaldir@
 
 # autoconf values for top dir
 abs_top_srcdir ?= @abs_top_srcdir@
@@ -231,6 +232,7 @@ libdir ?= ${exec_prefix}/lib
 localedir ?= ${datarootdir}/locale
 pkgdatadir ?= ${datarootdir}/${PACKAGE_TARNAME}
 pkgconfigdir ?= ${libdir}/pkgconfig
+aclocaldir ?= ${datarootdir}/aclocal
 
 # autoconf values for top dir
 abs_top_srcdir ?= $(CURDIR)
@@ -339,7 +341,7 @@ AM_SMALL_PRIMARIES += HEADERS SCRIPTS DATA MANS
 # list of destinations per primary
 AM_DESTINATIONS += bin lib libexec sbin \
 		   data doc include locale man sysconf \
-		   pkgdata pkgconfig \
+		   pkgdata pkgconfig aclocal \
 		   noinst EXTRA
 
 # primaries where 'dist' is default
