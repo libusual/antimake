@@ -1167,6 +1167,12 @@ AM_FLAGS += real
 
 ## EMBED_SUBDIRS end
 
+##
+## Launch target hooks
+##
+
+$(eval $(foreach hook,$(AM_TARGET_HOOKS),$(call ForEachTarget,$(hook),$(am_TARGETLISTS))))
+
 
 ##
 ## Now generate the rules
