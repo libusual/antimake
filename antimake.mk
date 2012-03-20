@@ -1042,29 +1042,34 @@ endif
 
 
 ##
-## Actual rules start
+## O=<tgtdir>
+##    if given, create wrapper makefiles in target dir
+##    that include makefiles from source dir, then run
+##    make from target dir.
 ##
-
-# if output is redirected, prepare target dir and launch submake
 
 ifneq ($(O),)
 
-ABS_DST := $(call JoinPath,$(CURDIR),$(O))
-.PHONY: $(MAKECMDGOALS)
-
-all $(filter-out all,$(MAKECMDGOALS)):
-	@test -d $(O) || { echo "Directory $(O) does not exist"; exit 1; }
-	@for mk in $(filter-out /%,$(MAKEFILE_LIST)); do \
-	    if ! test -f $(O)/$${mk}; then \
-	        printf '%s\n%s\n%s\n%s\n%s\n' \
+# 1-makefile
+define WrapMakeFileCmd
+	@$(MKDIR_P) '$(dir $(O)/$(1))'
+	@printf '%s\n%s\n%s\n%s\n%s\n' \
 		'abs_top_srcdir = $(CURDIR)' \
-		'abs_top_builddir = $(ABS_DST)' \
+		'abs_top_builddir = $(call JoinPath,$(CURDIR),$(O))' \
 		'nosub_top_srcdir = $(call UpDir,$(O))' \
 		'nosub_top_builddir = .' \
-		'include $$(abs_top_srcdir)/'"$${mk}" \
-	        > $(O)/$${mk}; \
-	    fi; \
-	done
+		'include $(abs_top_srcdir)/$(1)' \
+		> $(O)/$(1)
+endef
+
+# 1-makefile
+WrapMakeFile = $(if $(wildcard $(O)/$(1)),,$(call WrapMakeFileCmd,$(1))$(NewLine))
+
+# redirect whatever rule was given
+.PHONY: all $(MAKECMDGOALS)
+all $(filter-out all,$(MAKECMDGOALS)):
+	$(if $(wildcard $(O)),,$(error O=$(O): Directory '$(O)' does not exist))
+	$(foreach mk,$(filter-out /%,$(MAKEFILE_LIST)),$(call WrapMakeFile,$(mk)))
 	$(Q) $(MAKE) O= -C $(O) $(MAKECMDGOALS)
 
 # O=empty, this is main makefile
