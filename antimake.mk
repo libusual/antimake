@@ -580,11 +580,14 @@ DepFiles = $(wildcard $(addsuffix .d,$(1)))
 # per-target var override, 1=target, 2=varname
 # if foo_VAR exists, expand to:
 #   build_foo install_foo clean_foo: AM_VAR = $(foo_VAR)
-#TgtVar = $(if $($(1)_$(2)),build_$(1): AM_$(2) = $($(1)_$(2)))
-TgtVar = $(if $($(1)_$(2)),$$($(1)_FINAL): AM_$(2) = $($(1)_$(2)))
 
-# loop TgtVar over AM_TARGET_VARIABLES, 1=target
-VarOverride = $(foreach var,$(AM_TARGET_VARIABLES),$(eval $(call TgtVar,$(1),$(var))))
+
+# 1-tgt, 2-var, 3-final
+TgtVar2 = $(3): AM_$(2) = $$($(1)_$(2))$(NewLine)
+TgtVar = $(if $($(1)_$(2)),$(call TgtVar2,$(1),$(2),$(3)))
+
+# loop TgtVar over AM_TARGET_VARIABLES, 1=target, 2-final
+VarOverride = $(foreach var,$(AM_TARGET_VARIABLES),$(call TgtVar,$(1),$(var),$(2)))
 
 # check if actual target (.h, .exe) is nodist based on primary and flags
 # 1-prim 2-flags
@@ -885,6 +888,10 @@ endef
 ## Rules for big target
 ##
 
+# calculate target file name
+# 1-clean, 2-raw, 3-prim
+FinalTargetFile = $(if $(filter PROGRAMS,$(3)$($(1)_EXT)),$(2)$($(1)_EXT),$(2)$(EXEEXT))
+
 # 1=cleantgt,2=rawtgt,3=prim,4=dest,5=flags
 define BigTargetBuild
 $(trace5)
@@ -914,11 +921,7 @@ $(1)_LINKVAR := $(1)_LINK
 $(ENDIF)
 
 # calculate target file name
-$(IFEQ) ($(3)$($(1)_EXT),PROGRAMS)
-$(1)_FINAL = $(2)$$(EXEEXT)
-$(ELSE)
-$(1)_FINAL = $(2)$$($(1)_EXT)
-$(ENDIF)
+$(1)_FINAL = $(call FinalTargetFile,$(1),$(2),$(3))
 
 # hook libtool into LTLIBRARIES cleanup
 $(IFEQ) ($(3),LTLIBRARIES)
@@ -938,7 +941,7 @@ $(1)_CFLAGS := $$(call FixIncludes,$$(srcdir),$$($(1)_CFLAGS))
 .PHONY: build_$(1) clean_$(1)
 
 # allow target-specific variables
-$$(call VarOverride,$(1))
+$(call VarOverride,$(1),$(call FinalTargetFile,$(1),$(2),$(3)))
 
 # build and clean by default, unless flagged EXTRA
 $(IFNEQ) ($(4),EXTRA)

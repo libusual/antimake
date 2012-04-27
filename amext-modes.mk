@@ -1,6 +1,24 @@
+#
+# Custom compilation modes
+#   Compile one target several times with different
+#   configuration variables.
+#
+# Sample:
+#    CFLAGS = -O2
+#    bin_PROGRAM = prog
+#    prog_SOURCES = prog.c
+#
+#    AM_MODES = debug
+#    CFLAGS_debug = -O0 -g
+#
+# Result:
+#   prog       - compiled with -O2
+#   prog-debug - compiled with -O0 -g
+#
 
 AM_MODES ?= 
 
+# Variables that can be overrided with $(var)_$(mode)
 AM_MODE_OVERRIDE += CC CXX CFLAGS CPPFLAGS DEFS LDFLAGS LIBS
 
 ## add "-MODE" string before file extension
@@ -12,13 +30,13 @@ ModeName = $(basename $(2))-$(1)$(suffix $(2))
 ModeFilter = $(foreach f,$(2),$(if $(filter /% -%,$(f)),$(f),$(call ModeName,$(1),$(f))))
 
 ## set per-target var
-# 1-dbgvar, 2-var, 3-rawtgt
+# 1-dbgvar, 2-var, 3-final
 ModeVarX = $(3): $(2) = $$($(1))$(NewLine)
 
-# 1-mode, 2-var, 3-rawtgt
+# 1-mode, 2-var, 3-final
 ModeVarOverride = $(if $($(2)_$(1)),$(call ModeVarX,$(2)_$(1),$(2),$(3)))
 
-# 1-mode, 2-rawtgt
+# 1-mode, 2-final
 ModeVarOverrideAll = $(foreach v,$(AM_MODE_OVERRIDE),$(call ModeVarOverride,$(1),$(v),$(2)))
 
 ## copy target, replace vars
@@ -43,7 +61,7 @@ $(8)_LIBADD := $$(call ModeFilter,$(6),$$($(1)_LIBADD))
 $(8)_LDADD := $$(call ModeFilter,$(6),$$($(1)_LDADD))
 
 # add variable replacements
-$(call ModeVarOverrideAll,$(6),$(7))
+$(call ModeVarOverrideAll,$(6),$(call FinalTargetFile,$(8),$(7),$(3)))
 
 endef
 
