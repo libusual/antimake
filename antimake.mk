@@ -1173,6 +1173,19 @@ AM_FLAGS += real
 ## Launch target hooks
 ##
 
+amdir = $(dir $(realpath $(filter %/antimake.mk antimake.mk,$(MAKEFILE_LIST))))
+
+# 1-feat name
+FeatFile = $(amdir)/amext-$(1).mk
+
+
+# 1- fname
+LoadFeature = $(if $(wildcard $(call FeatFile,$(1))),$(eval include $(call FeatFile,$(1))),$(error Feature "$(call FeatFile,$(1))" is not available.))
+
+$(foreach f,$(AM_FEATURES),$(call LoadFeature,$(f)))
+
+
+
 $(eval $(foreach hook,$(AM_TARGET_HOOKS),$(call ForEachTarget,$(hook),$(am_TARGETLISTS))))
 
 
