@@ -4,7 +4,7 @@
 # Usage:
 #   USUAL_DIR = <libusual source tree>
 #
-#   <target>_MERGE_LIBUSUAL = 1
+#   <target>_EMBED_LIBUSUAL = 1
 #
 # It adds module sources into <target>_SOURCES
 # and -I$(USUAL_DIR) to _CPPFLAGS.
@@ -32,11 +32,11 @@ UsualSrcs = $(call UsualStrip,$(call UsualSrcsFull,$(1)))
 UsualSources = $(if $(1),$(call UsualSrcsFull,$(call UsualMods,$(1))))
 
 # 1=cleantgt,2=rawtgt,3=prim,4=dest,5=flags
-define MergeLibUsual
+define EmbedLibUsual
 $(trace5)
 
 # embed libusual objects directly
-$(IFEQ) ($$($(1)_MERGE_LIBUSUAL),1)
+$(IFEQ) ($$($(1)_EMBED_LIBUSUAL),1)
 
 $(1)_SOURCES := $$($(1)_SOURCES) $$(call UsualSources, $$($(1)_SOURCES))
 EXTRA_$(1)_SOURCES := $$(EXTRA_$(1)_SOURCES) \
@@ -59,7 +59,7 @@ $(ENDIF)
 
 endef
 
-AM_TARGET_HOOKS += MergeLibUsual
+AM_TARGET_HOOKS += EmbedLibUsual
 
 EXTRA_DIST += $(_USUAL_DIR)/find_modules.sh $(_USUAL_DIR)/usual/config.h.in
 
