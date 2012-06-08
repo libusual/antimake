@@ -8,7 +8,7 @@ title Antimake stress-test
 msg Autoconf setup
 
 cat_file autogen.sh <<"EOF"
-	../../std-autogen.sh ../../..
+	../../antigen.sh -I../../m4
 
 	# fetch Antimake template from libusual
 	grep -Ei '@[a-z_]+@' ../../antimake.mk > build.mk.in
@@ -20,9 +20,9 @@ cat_file configure.ac <<"EOF"
 	AC_INIT([actest], [0.1])
 	AC_CONFIG_SRCDIR([esub/prog.c])
 	AC_PREREQ([2.59])
-	AC_USUAL_INIT
+	AC_ANTIMAKE_INIT
+	AC_ANTIMAKE_PROGS
 	LT_INIT
-	AC_USUAL_PROGRAM_CHECK
 	AC_PROG_CXX
 	AC_OUTPUT([build.mk])
 EOF

@@ -8,7 +8,7 @@ title Using Antimake with autoconf
 msg Autoconf setup
 
 cat_file autogen.sh <<"EOF"
-	../../std-autogen.sh ../../..
+	../../antigen.sh -I../../m4
 
 	# fetch Antimake template from libusual
 	cp ../../antimake.mk antimake.mk.in
@@ -19,8 +19,8 @@ cat_file configure.ac <<"EOF"
 	AC_CONFIG_SRCDIR([prog.c])
 	AC_PREREQ([2.59])
 
-	AC_USUAL_INIT
-	AC_USUAL_PROGRAM_CHECK
+	AC_ANTIMAKE_INIT
+	AC_ANTIMAKE_PROGS
 
 	AC_OUTPUT([antimake.mk])
 EOF
@@ -60,6 +60,7 @@ EOF
 msg Build the project
 run sh ./autogen.sh
 runq ./configure
+run grep '@[A-Za-z0-9_]*@' antimake.mk
 run make
 run ls
 run ./prog

@@ -8,7 +8,7 @@ title Shared libraries and autoconf
 msg Autoconf setup
 
 cat_file autogen.sh <<"EOF"
-	../../std-autogen.sh ../../..
+	../../antigen.sh -I../../m4
 
 	# fetch Antimake template from libusual
 	cp ../../antimake.mk antimake.mk.in
@@ -19,10 +19,10 @@ cat_file configure.ac <<"EOF"
 	AC_CONFIG_SRCDIR([prog.c])
 	AC_PREREQ([2.59])
 
-	LT_INIT
-	AC_USUAL_INIT
+	AC_ANTIMAKE_INIT
+	AC_ANTIMAKE_PROGS
 
-	AC_USUAL_PROGRAM_CHECK
+	LT_INIT
 
 	AC_OUTPUT([antimake.mk])
 EOF

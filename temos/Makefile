@@ -4,8 +4,7 @@
 #
 
 TEMOS = \
-	antimake1 antimake2 antimake3 antimake4 antimake5 antimake6 \
-	libusual1 libusual2 libusual3 libusual4 libusual5 libusual6 \
+	antimake1 antimake2 antimake3 antimake4 antimake5 antimake6
 
 
 
