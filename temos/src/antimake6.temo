@@ -14,6 +14,7 @@ cat_file autogen.sh <<"EOF"
 	grep -Ei '@[a-z_]+@' ../../antimake.mk > build.mk.in
 	echo 'include $(abs_top_srcdir)/antimake.mk' >> build.mk.in
 	ln -sf ../../antimake.mk .
+	ln -sf ../../amext-cxx.mk .
 EOF
 
 cat_file configure.ac <<"EOF"
@@ -108,7 +109,7 @@ cat_file Makefile <<"EOF"
 
 	override WFLAGS = -Wall
 
-	EXTRA_DIST = Makefile antimake.mk $(MAINTAINERCLEANFILES)
+	EXTRA_DIST = Makefile antimake.mk amext-cxx.mk $(MAINTAINERCLEANFILES)
 
 	# clean configured files
 	DISTCLEANFILES = \
@@ -127,6 +128,8 @@ cat_file Makefile <<"EOF"
 
 	noinst_PROGRAMS = cpptest
 	cpptest_SOURCES = cpptest.cpp
+
+	AM_FEATURES = cxx
 
 	# launch Antimake
 	include build.mk

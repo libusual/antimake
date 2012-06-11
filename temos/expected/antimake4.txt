@@ -7,7 +7,7 @@ Autoconf setup
 .File: autogen.sh
 [source,shell]
 -----------------------------------
-../../std-autogen.sh ../../..
+../../antigen.sh -I../../m4
 
 # fetch Antimake template from libusual
 cp ../../antimake.mk antimake.mk.in
@@ -19,8 +19,8 @@ AC_INIT([actest], [0.1])
 AC_CONFIG_SRCDIR([prog.c])
 AC_PREREQ([2.59])
 
-AC_USUAL_INIT
-AC_USUAL_PROGRAM_CHECK
+AC_ANTIMAKE_INIT
+AC_ANTIMAKE_PROGS
 
 AC_OUTPUT([antimake.mk])
 -----------------------------------
@@ -67,6 +67,10 @@ Build the project
 $ sh ./autogen.sh
 $ ./configure
 [...]
+$ grep @[A-Za-z0-9_]*@ antimake.mk
+LD = @LD@
+LIBTOOL = @LIBTOOL@
+endif # end of @xx@ values
 $ make
      CC       prog.c
      CCLD     prog
