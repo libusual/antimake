@@ -4,10 +4,8 @@ PACKAGE_VERSION = 1.0
 
 dist_doc_DATA = antimake.txt
 dist_pkgdata_SCRIPTS = antimake.mk antigen.sh install-sh
-dist_pkgdata_DATA = amext-libusual.mk amext-modes.mk
+dist_pkgdata_DATA = amext-libusual.mk amext-modes.mk amext-cxx.mk
 dist_aclocal_DATA = m4/antimake.m4
-
-dist_bin_SCRIPTS = antimake.mk antigen.sh
 
 EXTRA_DIST = Makefile
 
