@@ -3,10 +3,12 @@
 # usage: antigen.sh [aclocal flags]
 
 #
-# autogen for non-automake trees
+# "Portable" autoreconf for non-automake trees.
 #
-# autotools generation (autoreconf) # is generally broken if automake
-# is not used.  This script tries to fix problems:
+# Regular autoconf does not work very well on older autoconf/automake/libtool
+# when automake is not used.
+#
+# This script tries to fix problems:
 #
 # - it installs files: config.sub, config.guess, install-sh
 # - it installs ltmain.sh, if LT_INIT or *LIBTOOL macro is used
