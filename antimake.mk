@@ -381,9 +381,15 @@ endif
 ## Quiet by default, 'make V=1' shows commands
 ##
 
+# 1-dir
+MkDir = $(MKDIR_P) $(1)
+
+# 1-fmt, 2-args
+Printf = printf $(1) $(2)
+
 CTX ?=
 ifeq ($(V), 0)
-E = @printf "%-4s %-8s %s\n" "$(CTX)"
+E = @$(call Printf,"%-4s %-8s %s\n","$(CTX)")
 Q = @
 LIBTOOLQ = --silent
 MAKEFLAGS += --no-print-directory
@@ -423,7 +429,7 @@ endef
 ##
 
 define ar_lib
-	$(Q) $(MKDIR_P) $(dir $@)
+	$(Q) $(call MkDir,$(dir $@))
 	$(E) "AR" $@
 	$(Q) $(AM_AR) $@ $^
 	$(E) "RANLIB" $@
@@ -433,21 +439,21 @@ endef
 # 1 - dir
 define ProgInstall
 	$(E) "INSTALL" "$< $(1)"
-	$(Q) $(MKDIR_P) $(1)
+	$(Q) $(call MkDir,$(1))
 	$(Q) $(INSTALL_PROGRAM) $< $(1)
 endef
 
 # 1 - dir
 define ScriptInstall
 	$(E) "INSTALL" "$< $(1)"
-	$(Q) $(MKDIR_P) $(1)
+	$(Q) $(call MkDir,$(1))
 	$(Q) $(INSTALL_SCRIPT) $< $(1)
 endef
 
 # 1 - dir
 define DataInstall
 	$(E) "INSTALL" "$< $(1)"
-	$(Q) $(MKDIR_P) $(1)
+	$(Q) $(call MkDir,$(1))
 	$(Q) $(INSTALL_DATA) $< $(1)
 endef
 
@@ -457,7 +463,7 @@ ManInstall = $(call DataInstall,$(1)/man$(call LastWord,$(subst ., ,$<)))
 # 1 - dir
 define LTLibInstall
 	$(E) "INSTALL" "$< $(1)"
-	$(Q) $(MKDIR_P) $(1)
+	$(Q) $(call MkDir,$(1))
 	$(Q) $(LIBTOOLCMD) --mode=install $(INSTALL) $< $(1)
 endef
 
@@ -470,7 +476,7 @@ endef
 define LangObjTarget
 $(trace3)
 $$(OBJDIR)/$(1)/%.o $$(OBJDIR)/$(1)/%.lo: %$(3)
-	$$(Q) $$(MKDIR_P) $$(dir $$@)
+	$$(Q) $$(call MkDir,$$(dir $$@))
 	$$(AM_LANG_$(2)_COMPILE)
 endef
 
@@ -938,7 +944,7 @@ build_$(1): $$($(1)_SOURCES) $$(nodist_$(1)_SOURCES)
 build_$(1): $$($(1)_DEPENDENCIES)
 build_$(1): $$($(1)_FINAL)
 $$($(1)_FINAL): $$($(1)_OBJS)
-	$$(Q) $$(MKDIR_P) $$(dir $$@)
+	$$(Q) $$(call MkDir,$$(dir $$@))
 	$$($(if $(filter LIBRARIES,$(3)),ar_lib,$$($(1)_LINKVAR)))
 
 clean_$(1):
@@ -1042,13 +1048,13 @@ ifneq ($(O),)
 
 # 1-makefile
 define WrapMakeFileCmd
-	@$(MKDIR_P) '$(dir $(O)/$(1))'
-	@printf '%s\n%s\n%s\n%s\n%s\n' \
+	@$(call MkDir,$(dir $(O)/$(1)))
+	@$(call Printf,'%s\n%s\n%s\n%s\n%s\n', \
 		'abs_top_srcdir = $(CURDIR)' \
 		'abs_top_builddir = $(call JoinPath,$(CURDIR),$(O))' \
 		'nosub_top_srcdir = $(call UpDir,$(O))' \
 		'nosub_top_builddir = .' \
-		'include $(abs_top_srcdir)/$(1)' \
+		'include $(abs_top_srcdir)/$(1)') \
 		> $(O)/$(1)
 endef
 
@@ -1235,7 +1241,7 @@ endif
 define MakeSubDir
 	$(trace1)
 	$(E) "MKDIR" "Create $(call JoinPath,$(SUBLOC),$(1))"
-	$(Q) @$(MKDIR_P) $(1)
+	$(Q) @$(call MkDir,$(1))
 	$(Q) @echo "include $(call UpDir,$(1))/$(srcdir)/$(1)/Makefile" > $(1)/Makefile
 endef
 
@@ -1285,7 +1291,7 @@ define MakeDist
 	$(Q) $(MAKE) -s am-check-distfiles
 	$(E) "MKDIR" $(AM_DIST_BASE)
 	$(Q) $(RM) -r -- $(AM_DIST_BASE) $(AM_DIST_BASE).$(AM_DIST_$(1)_EXT)
-	$(Q) $(MKDIR_P) $(AM_DIST_BASE)
+	$(Q) $(call MkDir,$(AM_DIST_BASE))
 	$(E) "COPY" $(AM_DIST_BASE)
 	$(Q) $(MAKE) -s am-show-distfiles | cpio -pmdL --quiet $(AM_DIST_BASE)
 	$(E) "PACK" $(AM_DIST_BASE).$(AM_FORMAT_$(1)_EXT)
@@ -1425,7 +1431,7 @@ $(foreach n,$(AmHelpNames),help-$(n)-local):
 help: $(foreach n,$(AmHelpNames),help-$(n) help-$(n)-local)
 
 # 1-var, 2-desc
-AmConf = @printf '  %-27s  %s=%s\n' $(call ShellQuote,$(2)) $(call ShellQuote,$(1)) $(call ShellQuote,$($(1)))
+AmConf = @$(call Printf,'  %-27s  %s=%s\n',$(call ShellQuote,$(2)) $(call ShellQuote,$(1)) $(call ShellQuote,$($(1))))
 
 help-targets:
 	@echo ""
