@@ -1,7 +1,5 @@
 #! /bin/sh
 
-# usage: antigen.sh [aclocal flags]
-
 #
 # "Portable" autoreconf for non-automake trees.
 #
@@ -14,6 +12,16 @@
 # - it installs ltmain.sh, if LT_INIT or *LIBTOOL macro is used
 # - any arguments are given to aclocal
 #
+
+if test "x$1" = "x--help"; then
+  echo "usage: antigen.sh [aclocal flags]"
+  exit 0
+fi
+
+test -f configure.ac || {
+  echo "$0: configure.ac is missing"
+  exit 1
+}
 
 set -e
 
